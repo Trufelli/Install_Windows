@@ -9,8 +9,6 @@
 :: #
 :: #####
 
-::# TESTE
-
 :: Define Charset para UTF-8
 chcp 65001
 
