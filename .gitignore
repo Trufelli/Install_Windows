@@ -1,0 +1,15 @@
+# Password files
+secret.txt
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+*.exe
+
+# Information Files
+*.inf
+*.ini
+*.exe
+*.msi
