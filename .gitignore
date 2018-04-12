@@ -11,5 +11,7 @@ secret.txt
 # Information Files
 *.inf
 *.ini
+
 *.exe
+
 *.msi
