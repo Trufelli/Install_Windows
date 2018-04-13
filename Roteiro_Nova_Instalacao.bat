@@ -75,9 +75,6 @@ del "C:\Users\Public\Desktop\Acrobat Reader DC.lnk"
 del "C:\Users\Public\Desktop\Skype.lnk"
 del "C:\Users\Public\Desktop\Avast.lnk"
 
-:: Clear screen
-CLS
-
 :: Choise what to install: AiO Agent , AiO Phone , or none...
 :start
 echo Informe a opcao: & echo 1 - Instalar AiO Agent & echo 2 - Instalar AiO Phone & echo 3 - Nao instalar nenhum app de telefonia
@@ -91,15 +88,15 @@ if %opcao_Instalar_Telefone%==2 (
 	choco install AiOPhone -y
 )
 
-if %opcao_Instalar_Telefone% == 1 (
-	if %opcao_Instalar_Telefone == 2(
+if %opcao_Instalar_Telefone%==1 (
+	if %opcao_Instalar_Telefone==2(
 		regedit.exe /s %dir%\install_click2call.reg
 	)
 )
 
-if NOT %opcao_Instalar_Telefone% == 1 (
-	if NOT %opcao_Instalar_Telefone% == 2 (
-		if NOT %opcao_Instalar_Telefone% == 3 (
+if NOT %opcao_Instalar_Telefone%==1 (
+	if NOT %opcao_Instalar_Telefone%==2 (
+		if NOT %opcao_Instalar_Telefone%==3 (
 			goto start
 		)
 	)
