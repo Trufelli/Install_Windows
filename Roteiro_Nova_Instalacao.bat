@@ -12,10 +12,10 @@
 chcp 65001
 
 :: Seta diretório aonde os scrips se encontram
-set dir="%UserProfile%\Desktop\Roteiro_Nova_Instalacao"
+set dir=%UserProfile%\Desktop\Roteiro_Nova_Instalacao
 
 :: Ler senhas do arquivo apropiado
-set /p adm_Pass=<%UserProfile%\secret.txt
+set /p adm_Pass=<%dir%\secret.txt
 
 :: Ativa o usuário "Administrador" local do computador
 net user administrador /active:yes
@@ -60,7 +60,9 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v Enab
 @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
 
 :: Maps Chocolatey Repo_MP
-net use x: \\172.16.1.253\Chocolatey_Repo /user:administrador %adm_Pass% /persistent:no
+net use x: \\MPS-001\Chocolateyrepo /user:administrador %adm_Pass% /persistent:no
+
+PAUSE
 
 :: Add the Chocolatey MP Repository
 choco source add -n Repo_MP -s x:\
@@ -73,14 +75,34 @@ del "C:\Users\Public\Desktop\Acrobat Reader DC.lnk"
 del "C:\Users\Public\Desktop\Skype.lnk"
 del "C:\Users\Public\Desktop\Avast.lnk"
 
-set /p Opcao_Instalar_Telefone="Informe a opção:1 - Instalar AiO Agent\n2 - Instalar AiO Phone\n3 - Não instalar nenhum app de telefonia"
+:: Clear screen
+CLS
 
-if %Opcao_Instalar_Telefone%==1 (
-	:: Instalar AiO Agent
+:: Choise what to install: AiO Agent , AiO Phone , or none...
+:start
+echo Informe a opcao: & echo 1 - Instalar AiO Agent & echo 2 - Instalar AiO Phone & echo 3 - Nao instalar nenhum app de telefonia
+set /p opcao_Instalar_Telefone="Opcao: "
+
+if %opcao_Instalar_Telefone%==1 (
+	choco install AiOAgent -y
 )
 
-if %Opcao_Instalar_Telefone%==2 (
-	:: Instalar AiO Phone
+if %opcao_Instalar_Telefone%==2 (
+	choco install AiOPhone -y
+)
+
+if %opcao_Instalar_Telefone% == 1 (
+	if %opcao_Instalar_Telefone == 2(
+		regedit.exe /s %dir%\install_click2call.reg
+	)
+)
+
+if NOT %opcao_Instalar_Telefone% == 1 (
+	if NOT %opcao_Instalar_Telefone% == 2 (
+		if NOT %opcao_Instalar_Telefone% == 3 (
+			goto start
+		)
+	)
 )
 
 :: Remover completamente o One Drive
@@ -105,9 +127,6 @@ cscript %dir%\Windows_Update.vbs
 
 :: Limpa o Win 10
 PowerShell.exe -noprofile -executionpolicy bypass -file %dir%\Windows10_Decrapifier_version_1.ps1
-
-:: Instala plugin do Chrome Click2Call
-::regedit.exe /s %UserProfile%\Desktop\Roteiro_nova_Instalacao\install_click2call.reg
 
 :: Instalar VNC
 ::%UserProfile%\Desktop\Roteiro_Nova_Instalacao\Pacotes\vnc\UltraVNC_1_2_12_X64_Setup.exe /verysilent /loadinf="%UserProfile%\Desktop\Roteiro_Nova_Instalacao\Pacotes\vnc\vncinstall.inf" /log /no restart
