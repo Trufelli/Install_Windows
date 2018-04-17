@@ -11,8 +11,11 @@
 :: Define Charset para UTF-8
 chcp 65001
 
-:: Seta diretório aonde os scrips se encontram
+:: Seta váriaveis para execução do script
 set dir=%UserProfile%\Desktop\Roteiro_Nova_Instalacao
+set choco_repo=x:\Chocolatey
+set images_repo=x:\imagens
+set user_Picture_Dir=C:\ProgramData\Microsoft\User Account Pictures
 
 :: Ler senhas do arquivo apropiado
 set /p adm_Pass=<%dir%\secret.txt
@@ -30,14 +33,16 @@ net localgroup administradores /delete mplayer
 :: Renomeia o Windows e adiciona ao grupo de trabalho "MEUSPEDIDOS"
 PowerShell.exe -noprofile -executionpolicy bypass -file %dir%\Rename_Windows.ps1
 
-:: Cria diretório para armazenar o Wallpaper
-::mkdir c:\Temp\Wallpaper
-
-:: Copiar Wallpaper para o diretório
-::copy "%UserProfile%\Desktop\Roteiro_Nova_Instalacao\Imagens\wallpaper.bmp" "C:\Temp\Wallpaper\wallpaper.bmp"
-
 :: Desabilitar notificações sobre o Firewall
 ::netsh firewall set notifications mode = disable profile = all 
+
+:: Set Desktop Wallpaper
+set-itemproperty -path "HKCU:Control Panel\Desktop" -name WallPaper -value %images_repo%\imagens\wallpaper.bmp
+
+:: Set User Account Picture
+md %user_Picture_Dir%\arquivos_Originais
+mv * %user_Picture_Dir%\ %user_Picture_Dir%\arquivos_Originais
+copy %images_repo%\* %user_Picture_Dir%\
 
 :: Libera acesso a \\ e Psexec
 reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\system /v LocalAccountTokenFilterPolicy /t REG_DWORD /d 1 /f
@@ -60,12 +65,12 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v Enab
 @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
 
 :: Maps Chocolatey Repo_MP
-net use x: \\MPS-001\Chocolateyrepo /user:administrador %adm_Pass% /persistent:no
+net use x: \\MPS-001\ti /user:mplayer %adm_Pass% /persistent:no
 
 PAUSE
 
 :: Add the Chocolatey MP Repository
-choco source add -n Repo_MP -s x:\
+choco source add -n Repo_MP -s %choco_repo%\chocolateyrepo
 
 :: Chocolatey install Programs (Chrome,Notepad++,Slack,Skype)
 choco install .\Packages.config -y
